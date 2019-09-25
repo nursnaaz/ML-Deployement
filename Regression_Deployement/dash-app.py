@@ -4,11 +4,16 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from sklearn.externals import joblib
 import plotly.graph_objs as go
+from flask import Flask, jsonify, request
+
 
 app = dash.Dash()
 
 training_data = joblib.load("./training_data.pkl")
 training_labels = joblib.load("./training_labels.pkl")
+print(training_data)
+
+print(training_labels)
 
 app.layout = html.Div(children=[
     html.H1(children='Simple Linear Regression', style={'textAlign': 'center'}),
@@ -51,11 +56,15 @@ app.layout = html.Div(children=[
 def update_years_of_experience_input(years_of_experience):
     if years_of_experience is not None and years_of_experience is not '':
         try:
-            salary = model.predict(float(years_of_experience))[0]
-            return 'With {} years of experience you should earn a salary of ${:,.2f}'.\
-                format(years_of_experience, salary, 2)
+            salary = model.predict([[float(years_of_experience)]])
+            #return jsonify(data ='With {} years of experience you should earn a salary of ${:,.2f}'.\
+            #    format(years_of_experience, salary, 2))
+            a = salary.tolist()
+            print(a)
+            
         except ValueError:
-            return 'Unable to give years of experience'
+            pass
+            return jsonify(data = 'Unable to give years of experience')
 
 
 if __name__ == '__main__':

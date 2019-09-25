@@ -3,23 +3,34 @@ import pandas as pd
 import os
 from sklearn.externals import joblib
 from sklearn.linear_model import LinearRegression
+import numpy as np
+import codecs, json 
 
 app = Flask(__name__)
 
 
 @app.route("/predict", methods=['POST'])
 def predict():
+    print("I am hre in predict function")
+    Prediction = 1
     if request.method == 'POST':
         try:
             data = request.get_json()
+            print(data)
             years_of_experience = float(data["yearsOfExperience"])
-
+            print(years_of_experience)
             lin_reg = joblib.load("./linear_regression_model.pkl")
+            print(lin_reg.intercept_)
         except ValueError:
             return jsonify("Please enter a number.")
-        print("Prediction = ",lin_reg.predict(years_of_experience))
-        #return (lin_reg.predict(years_of_experience))
-        return True
+        print("Prediction = ",lin_reg.predict([[years_of_experience]]))
+        Prediction = lin_reg.predict([[years_of_experience]])
+    print(type(Prediction))
+    a = Prediction.tolist()
+    print(a)
+    json_dump = json.dumps(a)
+    print(json_dump)
+    return (json_dump)
 
 
 @app.route("/retrain", methods=['POST'])
@@ -54,8 +65,7 @@ def retrain():
         except ValueError as e:
             return jsonify("Error when retraining - {}".format(e))
         print("Retrained model successfully.")
-        return True
-        #return jsonify("Retrained model successfully.")
+        return jsonify(data = "Retrained model successfully.")
 
 
 @app.route("/currentDetails", methods=['GET'])

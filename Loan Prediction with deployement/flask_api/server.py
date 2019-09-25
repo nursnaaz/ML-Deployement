@@ -66,3 +66,8 @@ def bad_request(error=None):
 	resp.status_code = 400
 
 	return resp
+
+
+# Running the server
+if __name__ == '__main__':
+    app.run(port=9000,debug=True)
